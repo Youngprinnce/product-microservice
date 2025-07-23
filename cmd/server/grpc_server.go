@@ -23,6 +23,12 @@ func StartGRPCServer(cfg *config.Config) {
 	}
 	db := postgres.GetSession()
 
+	// Auto-migrate database schema
+	err = db.AutoMigrate(&product.Product{}, &subscription.SubscriptionPlan{})
+	if err != nil {
+		log.Fatalf("Failed to auto-migrate database: %v", err)
+	}
+
 	// Initialize repositories
 	productRepo := product.NewProductRepo(db)
 	subscriptionRepo := subscription.NewSubscriptionRepo(db)
