@@ -1,0 +1,15 @@
+app:
+  name: "product-microservice"
+  version: "1.0.0"
+  env: "development"
+
+server:
+  listen: "0.0.0.0"
+  port: "50051"
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "admin"
+  db_name: "product_microservice"
