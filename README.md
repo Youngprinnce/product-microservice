@@ -5,7 +5,9 @@ A gRPC-based microservice for managing products and subscription plans, built wi
 ## Table of Contents
 
 - [Features](#features)
-- [Quick Start (Docker)](#quick-start-docker)
+- [Setup Options](#setup-options)
+  - [Option 1: Docker Setup (Recommended)](#option-1-docker-setup-recommended)
+  - [Option 2: Manual Setup](#option-2-manual-setup)
 - [API Documentation](#api-documentation)
 - [Development](#development)
 
@@ -28,9 +30,23 @@ A gRPC-based microservice for managing products and subscription plans, built wi
 - **Duration & Pricing**: Flexible duration (in days) and pricing models
 - **CRUD Operations**: Complete lifecycle management for subscription plans
 
-## Quick Start (Docker)
+## Setup Options
+
+Choose your preferred setup method:
+
+| Feature | Docker (Option 1) ✅ | Manual (Option 2) |
+|---------|---------------------|-------------------|
+| **Setup Time** | ~2 minutes | ~5-10 minutes |
+| **Database Setup** | Automatic | Manual configuration required |
+| **Dependencies** | Only Docker | Go, PostgreSQL, protoc |
+| **Isolation** | Complete | Uses system resources |
+| **Recommended For** | Development, Testing | Production, Custom setups |
+
+## Option 1: Docker Setup (Recommended)
 
 **Prerequisites**: Docker and Docker Compose installed
+
+Docker setup provides the easiest and most consistent development experience with zero configuration required.
 
 ### 1. Start the Application
 
@@ -44,43 +60,93 @@ make docker-up
 ```
 
 The application will be available on:
+
 - **gRPC Server**: `localhost:50051`
 - **PostgreSQL**: `localhost:5434`
 
-### 2. Test the API
-
-```bash
-# List available services
-grpcurl -plaintext localhost:50051 list
-
-# Create a product
-grpcurl -plaintext -d '{
-  "name": "Test Product",
-  "description": "A test product",
-  "price": 29.99,
-  "type": "DIGITAL",
-  "digital_product": {
-    "file_size": 1024,
-    "download_link": "https://example.com/download"
-  }
-}' localhost:50051 product.ProductService.CreateProduct
-
-# List products
-grpcurl -plaintext -d '{"page": 1, "page_size": 10}' localhost:50051 product.ProductService.ListProducts
-```
-
-### 3. Manage Services
+### 2. Test the Docker Setup
 
 ```bash
 # View logs
 make docker-logs
 
+# Test API
+grpcurl -plaintext localhost:50051 list
+
 # Stop services
 make docker-down
-
-# Clean up (remove containers and volumes)
-make docker-clean
 ```
+
+## Option 2: Manual Setup
+
+**Prerequisites**: Go 1.21+, PostgreSQL 13+, Protocol Buffers compiler
+
+Manual setup requires you to configure your own PostgreSQL database.
+
+### 1. Database Setup
+
+1. **Create a PostgreSQL database** using pgAdmin or command line:
+   ```sql
+   CREATE DATABASE product_microservice;
+   ```
+
+2. **Update configuration** in `etc/config.yaml` with your database details:
+   ```yaml
+   database:
+     host: "localhost"
+     port: 5432
+     user: "your_postgresql_username"
+     password: "your_postgresql_password"
+     db_name: "your_database_name"
+   ```
+
+### 2. Application Setup
+
+```bash
+# Install dependencies
+go mod download
+
+# Build the application
+make build
+
+# Run tests
+make test
+
+# Start the server
+make run
+```
+
+The application will be available on:
+
+- **gRPC Server**: `localhost:50051`
+- **Your PostgreSQL**: Your configured host and port
+
+### 3. Verify Manual Setup
+
+```bash
+# List available services
+### 3. Verify Manual Setup
+
+```bash
+# Check if server is running
+grpcurl -plaintext localhost:50051 list
+
+# Test creating a product
+grpcurl -plaintext -d '{
+  "name": "Local Test Product",
+  "description": "Testing manual setup",
+  "price": 19.99,
+  "type": "DIGITAL",
+  "digital_product": {
+    "file_size": 2048,
+    "download_link": "https://example.com/test"
+  }
+}' localhost:50051 product.ProductService/CreateProduct
+```
+
+**Note**: Tables (`products`, `subscription_plans`) will be created automatically when the server starts.
+
+---
 
 ## API Documentation
 
