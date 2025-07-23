@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "github.com/youngprinnce/product-microservice/proto";
+
+import "google/protobuf/timestamp.proto";
+
+// Product types
+enum ProductType {
+  DIGITAL = 0;
+  PHYSICAL = 1;
+  SUBSCRIPTION = 2;
+}
+
+// Common product fields
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  ProductType type = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  
+  // Type-specific fields (only one will be populated based on type)
+  DigitalProduct digital_product = 8;
+  PhysicalProduct physical_product = 9;
+  SubscriptionProduct subscription_product = 10;
+}
+
+// Digital product specific fields
+message DigitalProduct {
+  int64 file_size = 1;
+  string download_link = 2;
+}
+
+// Physical product specific fields
+message PhysicalProduct {
+  double weight = 1;
+  string dimensions = 2;
+}
+
+// Subscription product specific fields
+message SubscriptionProduct {
+  string subscription_period = 1;
+  double renewal_price = 2;
+}
+
+// Request/Response messages for ProductService
+message CreateProductRequest {
+  string name = 1;
+  string description = 2;
+  double price = 3;
+  ProductType type = 4;
+  
+  // Type-specific fields
+  DigitalProduct digital_product = 5;
+  PhysicalProduct physical_product = 6;
+  SubscriptionProduct subscription_product = 7;
+}
+
+message CreateProductResponse {
+  Product product = 1;
+}
+
+message GetProductRequest {
+  string id = 1;
+}
+
+message GetProductResponse {
+  Product product = 1;
+}
+
+message UpdateProductRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  
+  // Type-specific fields
+  DigitalProduct digital_product = 5;
+  PhysicalProduct physical_product = 6;
+  SubscriptionProduct subscription_product = 7;
+}
+
+message UpdateProductResponse {
+  Product product = 1;
+}
+
+message DeleteProductRequest {
+  string id = 1;
+}
+
+message DeleteProductResponse {
+  bool success = 1;
+}
+
+message ListProductsRequest {
+  ProductType type = 1; // Optional filter by type
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message ListProductsResponse {
+  repeated Product products = 1;
+  int64 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// ProductService definition
+service ProductService {
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
+}

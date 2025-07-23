@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package subscription;
+
+option go_package = "github.com/youngprinnce/product-microservice/proto";
+
+import "google/protobuf/timestamp.proto";
+
+// Subscription plan
+message SubscriptionPlan {
+  string id = 1;
+  string product_id = 2;
+  string plan_name = 3;
+  int32 duration = 4; // number of days
+  double price = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+// Request/Response messages for SubscriptionService
+message CreateSubscriptionPlanRequest {
+  string product_id = 1;
+  string plan_name = 2;
+  int32 duration = 3;
+  double price = 4;
+}
+
+message CreateSubscriptionPlanResponse {
+  SubscriptionPlan plan = 1;
+}
+
+message GetSubscriptionPlanRequest {
+  string id = 1;
+}
+
+message GetSubscriptionPlanResponse {
+  SubscriptionPlan plan = 1;
+}
+
+message UpdateSubscriptionPlanRequest {
+  string id = 1;
+  string plan_name = 2;
+  int32 duration = 3;
+  double price = 4;
+}
+
+message UpdateSubscriptionPlanResponse {
+  SubscriptionPlan plan = 1;
+}
+
+message DeleteSubscriptionPlanRequest {
+  string id = 1;
+}
+
+message DeleteSubscriptionPlanResponse {
+  bool success = 1;
+}
+
+message ListSubscriptionPlansRequest {
+  string product_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message ListSubscriptionPlansResponse {
+  repeated SubscriptionPlan plans = 1;
+  int64 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// SubscriptionService definition
+service SubscriptionService {
+  rpc CreateSubscriptionPlan(CreateSubscriptionPlanRequest) returns (CreateSubscriptionPlanResponse);
+  rpc GetSubscriptionPlan(GetSubscriptionPlanRequest) returns (GetSubscriptionPlanResponse);
+  rpc UpdateSubscriptionPlan(UpdateSubscriptionPlanRequest) returns (UpdateSubscriptionPlanResponse);
+  rpc DeleteSubscriptionPlan(DeleteSubscriptionPlanRequest) returns (DeleteSubscriptionPlanResponse);
+  rpc ListSubscriptionPlans(ListSubscriptionPlansRequest) returns (ListSubscriptionPlansResponse);
+}
