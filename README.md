@@ -400,36 +400,46 @@ go test -race ./...
 
 ## Docker Deployment
 
-### Build Docker Image
+### Quick Start with Docker Compose
 
 ```bash
-make docker-build
-```
-
-### Run with Docker Compose
-
-```bash
-# Start services (app + postgres)
-docker-compose up -d
+# Start all services (app + postgres)
+make docker-up
 
 # View logs
-docker-compose logs -f
+make docker-logs
 
 # Stop services
-docker-compose down
+make docker-down
+
+# Clean up (stop services and remove volumes)
+make docker-clean
+```
+
+### Manual Docker Commands
+
+```bash
+# Build Docker image
+make docker-build
+
+# Run single container (requires external database)
+make docker-run
 ```
 
 ### Docker Environment Variables
 
+The application supports the following environment variables for Docker deployment:
+
 ```bash
-# .env file for docker-compose
-DB_HOST=postgres
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=postgres
-DB_DATABASE=product_microservice
-GRPC_PORT=50051
+DATABASE_HOST=postgres        # Database host
+DATABASE_PORT=5432           # Database port
+DATABASE_USER=postgres       # Database username
+DATABASE_PASSWORD=admin      # Database password
+DATABASE_NAME=product_microservice  # Database name
+SERVER_PORT=50051           # gRPC server port
 ```
+
+These are automatically set in the `docker-compose.yml` file.
 
 ## Development
 
@@ -773,6 +783,13 @@ make test
 ```
 
 ## Docker
+
+Quick start with Docker Compose:
+```bash
+make docker-up    # Start all services
+make docker-logs  # View logs
+make docker-down  # Stop services
+```
 
 Build Docker image:
 ```bash

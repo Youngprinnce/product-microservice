@@ -1,11 +1,12 @@
 package config
 
 import (
-"fmt"
-"os"
+	"fmt"
+	"os"
+	"strconv"
 
-"github.com/youngprinnce/product-microservice/internal/logger"
-"gopkg.in/yaml.v2"
+	"github.com/youngprinnce/product-microservice/internal/logger"
+	"gopkg.in/yaml.v2"
 )
 
 type App struct {
@@ -41,17 +42,39 @@ func Load() (*Config, error) {
 	if configPath == "" {
 		configPath = "etc/config.yaml"
 	}
-	
+
 	yamlFile, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
-	
+
 	err = yaml.Unmarshal(yamlFile, &conf)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
-	
+
+	// Override with environment variables if they exist
+	if host := os.Getenv("DATABASE_HOST"); host != "" {
+		conf.Database.Host = host
+	}
+	if port := os.Getenv("DATABASE_PORT"); port != "" {
+		if p, err := strconv.Atoi(port); err == nil {
+			conf.Database.Port = p
+		}
+	}
+	if user := os.Getenv("DATABASE_USER"); user != "" {
+		conf.Database.User = user
+	}
+	if password := os.Getenv("DATABASE_PASSWORD"); password != "" {
+		conf.Database.Password = password
+	}
+	if dbName := os.Getenv("DATABASE_NAME"); dbName != "" {
+		conf.Database.DbName = dbName
+	}
+	if serverPort := os.Getenv("SERVER_PORT"); serverPort != "" {
+		conf.Server.Port = serverPort
+	}
+
 	return &conf, nil
 }
 

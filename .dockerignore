@@ -1,0 +1,42 @@
+# Binaries
+main
+product-microservice
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Go specific
+vendor/
+*.test
+*.prof
+
+# Docker
+.dockerignore
+
+# Environment files
+.env
+.env.local
+
+# Coverage reports
+coverage.html
+coverage.out
+
+# Test databases
+*.db
+*.sqlite
+*.sqlite3

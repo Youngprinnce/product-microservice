@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"os"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -17,7 +18,15 @@ func StartServerCmd() *cobra.Command {
 		Long:  `Start the gRPC server for product and subscription services`,
 		Run: func(cmd *cobra.Command, args []string) {
 			configFile, _ := cmd.Flags().GetString("config")
-			conf := config.LoadConfig(configFile)
+			// Set config path in environment for Load() function
+			if configFile != "" {
+				os.Setenv("CONFIG_PATH", configFile)
+			}
+
+			conf, err := config.Load()
+			if err != nil {
+				logger.Fatal(fmt.Sprintf("Failed to load config: %v", err))
+			}
 
 			logger.Initialize()
 

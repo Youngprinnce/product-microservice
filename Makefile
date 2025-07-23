@@ -1,4 +1,4 @@
-.PHONY: build run run-server dev test test-coverage test-coverage-html test-integration test-all test-unit clean proto migrate-up migrate-down deps tidy fmt lint mocks docker-build docker-run help
+.PHONY: build run run-server dev test test-coverage test-coverage-html test-integration test-all test-unit clean proto migrate-up migrate-down deps tidy fmt lint mocks docker-build docker-run docker-up docker-down docker-logs docker-restart docker-clean help
 
 # Build the server
 build:
@@ -87,6 +87,23 @@ docker-build:
 docker-run:
 	docker run -p 50051:50051 product-microservice
 
+# Docker Compose commands
+docker-up:
+	docker-compose up --build -d
+
+docker-down:
+	docker-compose down
+
+docker-logs:
+	docker-compose logs -f
+
+docker-restart:
+	docker-compose restart
+
+docker-clean:
+	docker-compose down -v
+	docker system prune -f
+
 # Help
 help:
 	@echo "Available targets:"
@@ -123,6 +140,11 @@ help:
 	@echo "Docker:"
 	@echo "  docker-build    - Build Docker image"
 	@echo "  docker-run      - Run Docker container"
+	@echo "  docker-up       - Start services with docker-compose"
+	@echo "  docker-down     - Stop docker-compose services"
+	@echo "  docker-logs     - View logs from docker-compose services"
+	@echo "  docker-restart  - Restart docker-compose services"
+	@echo "  docker-clean    - Stop services and clean up volumes"
 	@echo ""
 	@echo "Usage examples:"
 	@echo "  make run-server     # Start server with config"
