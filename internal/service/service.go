@@ -1,7 +1,7 @@
 package service
 
 import (
-"fmt"
+	"fmt"
 )
 
 // Common service errors

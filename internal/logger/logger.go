@@ -1,9 +1,9 @@
 package logger
 
 import (
-"os"
+	"os"
 
-log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 func Initialize() {

@@ -1,5 +1,5 @@
 CREATE TABLE subscription_plans (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY,
     product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     plan_name VARCHAR(255) NOT NULL,
     duration INTEGER NOT NULL CHECK (duration > 0), -- number of days

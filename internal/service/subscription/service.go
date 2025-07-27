@@ -38,6 +38,7 @@ func (s *SubscriptionService) CreateSubscriptionPlan(ctx context.Context, req Cr
 	}
 
 	plan := &SubscriptionPlan{
+		ID:        uuid.New(),
 		ProductID: productID,
 		PlanName:  req.PlanName,
 		Duration:  req.Duration,

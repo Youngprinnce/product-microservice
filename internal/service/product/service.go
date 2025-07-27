@@ -43,6 +43,7 @@ func (s *ProductService) CreateProduct(ctx context.Context, req CreateProductReq
 	}
 
 	product := &Product{
+		ID:          uuid.New(),
 		Name:        req.Name,
 		Description: req.Description,
 		Price:       req.Price,

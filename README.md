@@ -246,21 +246,51 @@ grpcurl -plaintext \
 }' localhost:50051 product.ProductService.ListProducts
 ```
 
-#### Other Operations
+#### GetProduct
 
 ```bash
 # Get product by ID
-grpcurl -plaintext -d '{"id": "your-product-id"}' localhost:50051 product.ProductService.GetProduct
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{"id": "your-product-id"}' \
+  localhost:50051 product.ProductService.GetProduct
+```
 
-# Update product
-grpcurl -plaintext -d '{
+#### UpdateProduct
+
+```bash
+# Update product details
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
   "id": "your-product-id",
   "name": "Updated Product Name",
   "price": 39.99
 }' localhost:50051 product.ProductService.UpdateProduct
 
+# Update digital product with new download link
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
+  "id": "your-product-id",
+  "name": "Updated E-book",
+  "description": "Updated description",
+  "price": 49.99,
+  "digital_product": {
+    "file_size": 2048000,
+    "download_link": "https://example.com/new-download-link.pdf"
+  }
+}' localhost:50051 product.ProductService.UpdateProduct
+```
+
+#### DeleteProduct
+
+```bash
 # Delete product
-grpcurl -plaintext -d '{"id": "your-product-id"}' localhost:50051 product.ProductService.DeleteProduct
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{"id": "your-product-id"}' \
+  localhost:50051 product.ProductService.DeleteProduct
 ```
 
 ### Subscription Service
@@ -268,26 +298,80 @@ grpcurl -plaintext -d '{"id": "your-product-id"}' localhost:50051 product.Produc
 #### CreateSubscriptionPlan
 
 ```bash
-grpcurl -plaintext -d '{
+# Create a subscription plan for a product
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
   "product_id": "your-product-id",
   "plan_name": "Monthly Premium",
   "duration": 30,
   "price": 29.99
 }' localhost:50051 subscription.SubscriptionService.CreateSubscriptionPlan
+
+# Create annual subscription plan
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
+  "product_id": "your-product-id", 
+  "plan_name": "Annual Premium",
+  "duration": 365,
+  "price": 299.99
+}' localhost:50051 subscription.SubscriptionService.CreateSubscriptionPlan
 ```
 
-#### Other Operations
+#### GetSubscriptionPlan
 
 ```bash
-# Get subscription plan
-grpcurl -plaintext -d '{"id": "your-plan-id"}' localhost:50051 subscription.SubscriptionService.GetSubscriptionPlan
+# Get subscription plan by ID
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{"id": "your-plan-id"}' \
+  localhost:50051 subscription.SubscriptionService.GetSubscriptionPlan
+```
 
-# List subscription plans
-grpcurl -plaintext -d '{
+#### ListSubscriptionPlans
+
+```bash
+# List all subscription plans for a product
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
   "product_id": "your-product-id",
   "page": 1,
   "page_size": 10
 }' localhost:50051 subscription.SubscriptionService.ListSubscriptionPlans
+
+# List all subscription plans (no product filter)
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
+  "page": 1,
+  "page_size": 10
+}' localhost:50051 subscription.SubscriptionService.ListSubscriptionPlans
+```
+
+#### UpdateSubscriptionPlan
+
+```bash
+# Update subscription plan details
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
+  "id": "your-plan-id",
+  "plan_name": "Updated Premium Plan",
+  "duration": 60,
+  "price": 49.99
+}' localhost:50051 subscription.SubscriptionService.UpdateSubscriptionPlan
+```
+
+#### DeleteSubscriptionPlan
+
+```bash
+# Delete subscription plan
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{"id": "your-plan-id"}' \
+  localhost:50051 subscription.SubscriptionService.DeleteSubscriptionPlan
 ```
 
 ## Development
@@ -299,13 +383,11 @@ grpcurl -plaintext -d '{
 make docker-up        # Start all services with docker-compose
 make docker-down      # Stop docker-compose services
 make docker-logs      # View logs from all services
-make docker-clean     # Stop and clean up everything
 
 # Local Development (requires Go and PostgreSQL)
 make build            # Build the application
 make run              # Run the server
-make test             # Run tests
-make clean            # Clean build artifacts
+make test             # Run tests with coverage
 make proto            # Generate protobuf code
 ```
 

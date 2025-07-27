@@ -8,7 +8,7 @@ import (
 
 // SubscriptionPlan represents a subscription plan entity
 type SubscriptionPlan struct {
-	ID        uuid.UUID `json:"id" gorm:"type:uuid"`
+	ID        uuid.UUID `json:"id" gorm:"type:uuid;primary_key"`
 	ProductID uuid.UUID `json:"product_id" gorm:"type:uuid"`
 	PlanName  string    `json:"plan_name"`
 	Duration  int       `json:"duration"` // number of days

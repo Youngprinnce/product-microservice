@@ -17,7 +17,7 @@ const (
 
 // Product represents the base product entity
 type Product struct {
-	ID          uuid.UUID   `json:"id" gorm:"type:uuid"`
+	ID          uuid.UUID   `json:"id" gorm:"type:uuid;primary_key"`
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	Price       float64     `json:"price"`
