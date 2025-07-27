@@ -1,21 +1,20 @@
 package subscription
 
 import (
-"time"
+	"time"
 
-"github.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 // SubscriptionPlan represents a subscription plan entity
 type SubscriptionPlan struct {
-	ID        uuid.UUID  `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	ProductID uuid.UUID  `json:"product_id" gorm:"type:uuid;not null;index"`
-	PlanName  string     `json:"plan_name" gorm:"not null"`
-	Duration  int        `json:"duration" gorm:"not null"` // number of days
-	Price     float64    `json:"price" gorm:"not null"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
-	DeletedAt *time.Time `json:"-" gorm:"index"`
+	ID        uuid.UUID `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	ProductID uuid.UUID `json:"product_id" gorm:"type:uuid;not null;index"`
+	PlanName  string    `json:"plan_name" gorm:"not null"`
+	Duration  int       `json:"duration" gorm:"not null"` // number of days
+	Price     float64   `json:"price" gorm:"not null"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // CreateSubscriptionPlanRequest represents the request to create a subscription plan

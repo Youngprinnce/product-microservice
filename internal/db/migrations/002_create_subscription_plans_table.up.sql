@@ -6,13 +6,11 @@ CREATE TABLE subscription_plans (
     price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
     
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP WITH TIME ZONE
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create indexes for better performance
 CREATE INDEX idx_subscription_plans_product_id ON subscription_plans(product_id);
-CREATE INDEX idx_subscription_plans_deleted_at ON subscription_plans(deleted_at);
 CREATE INDEX idx_subscription_plans_created_at ON subscription_plans(created_at);
 
 -- Create trigger to automatically update updated_at

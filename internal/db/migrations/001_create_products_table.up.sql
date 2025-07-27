@@ -20,15 +20,13 @@ CREATE TABLE products (
     subscription_renewal_price DECIMAL(10,2),
     
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP WITH TIME ZONE
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create indexes for better performance
 CREATE INDEX idx_products_type ON products(type);
 CREATE INDEX idx_products_created_at ON products(created_at);
 CREATE INDEX idx_products_name ON products(name);
-CREATE INDEX idx_products_deleted_at ON products(deleted_at);
 
 -- Create trigger to automatically update updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()

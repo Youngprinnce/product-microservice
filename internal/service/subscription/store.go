@@ -1,10 +1,10 @@
 package subscription
 
 import (
-"context"
+	"context"
 
-"github.com/google/uuid"
-"gorm.io/gorm"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // SubscriptionStore defines the interface for subscription plan data operations
@@ -56,19 +56,19 @@ func (r *SubscriptionRepo) Update(ctx context.Context, id uuid.UUID, updates map
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Fetch updated plan
 	err = r.db.WithContext(ctx).Where("id = ?", id).First(&plan).Error
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &plan, nil
 }
 
-// Delete soft deletes a subscription plan
+// Delete permanently deletes a subscription plan
 func (r *SubscriptionRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&SubscriptionPlan{}).Error
+	return r.db.WithContext(ctx).Unscoped().Where("id = ?", id).Delete(&SubscriptionPlan{}).Error
 }
 
 // CountByProductID returns the total number of subscription plans for a product

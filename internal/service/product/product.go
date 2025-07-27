@@ -24,7 +24,6 @@ type Product struct {
 	Type        ProductType `json:"type" gorm:"not null"`
 	CreatedAt   time.Time   `json:"created_at"`
 	UpdatedAt   time.Time   `json:"updated_at"`
-	DeletedAt   *time.Time  `json:"-" gorm:"index"`
 
 	// Type-specific embedded structs
 	DigitalProductInfo      *DigitalProductInfo      `json:"digital_product,omitempty" gorm:"embedded"`

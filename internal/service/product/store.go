@@ -1,10 +1,10 @@
 package product
 
 import (
-"context"
+	"context"
 
-"github.com/google/uuid"
-"gorm.io/gorm"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // ProductStore defines the interface for product data operations
@@ -46,11 +46,11 @@ func (r *ProductRepo) GetByID(ctx context.Context, id uuid.UUID) (*Product, erro
 func (r *ProductRepo) GetAll(ctx context.Context, typeFilter *ProductType, limit, offset int) ([]*Product, error) {
 	var products []*Product
 	query := r.db.WithContext(ctx)
-	
+
 	if typeFilter != nil {
 		query = query.Where("type = ?", *typeFilter)
 	}
-	
+
 	err := query.Limit(limit).Offset(offset).Find(&products).Error
 	return products, err
 }
@@ -62,30 +62,30 @@ func (r *ProductRepo) Update(ctx context.Context, id uuid.UUID, updates map[stri
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Fetch updated product
 	err = r.db.WithContext(ctx).Where("id = ?", id).First(&product).Error
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &product, nil
 }
 
-// Delete soft deletes a product
+// Delete permanently deletes a product
 func (r *ProductRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Product{}).Error
+	return r.db.WithContext(ctx).Unscoped().Where("id = ?", id).Delete(&Product{}).Error
 }
 
 // Count returns the total number of products with optional type filtering
 func (r *ProductRepo) Count(ctx context.Context, typeFilter *ProductType) (int64, error) {
 	var count int64
 	query := r.db.WithContext(ctx).Model(&Product{})
-	
+
 	if typeFilter != nil {
 		query = query.Where("type = ?", *typeFilter)
 	}
-	
+
 	err := query.Count(&count).Error
 	return count, err
 }
