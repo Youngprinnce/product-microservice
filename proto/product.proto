@@ -97,7 +97,7 @@ message DeleteProductResponse {
 }
 
 message ListProductsRequest {
-  ProductType type = 1; // Optional filter by type
+  optional ProductType type = 1; // Optional filter by type
   int32 page = 2;
   int32 page_size = 3;
 }

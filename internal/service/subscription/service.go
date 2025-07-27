@@ -1,12 +1,12 @@
 package subscription
 
 import (
-"context"
-"errors"
+	"context"
+	"errors"
 
-"github.com/google/uuid"
-"github.com/youngprinnce/product-microservice/internal/service"
-"gorm.io/gorm"
+	"github.com/google/uuid"
+	"github.com/youngprinnce/product-microservice/internal/service"
+	"gorm.io/gorm"
 )
 
 // SubscriptionBC defines the business logic interface for subscription plans
@@ -34,15 +34,7 @@ func NewSubscriptionService(store SubscriptionStore) *SubscriptionService {
 func (s *SubscriptionService) CreateSubscriptionPlan(ctx context.Context, req CreateSubscriptionPlanRequest) (*SubscriptionPlan, error) {
 	productID, err := uuid.Parse(req.ProductID)
 	if err != nil {
-		return nil, service.BadRequest{Err: errors.New("invalid product ID")}
-	}
-
-	if req.Duration <= 0 {
-		return nil, service.BadRequest{Err: errors.New("duration must be greater than 0")}
-	}
-
-	if req.Price <= 0 {
-		return nil, service.BadRequest{Err: errors.New("price must be greater than 0")}
+		return nil, service.BadRequest{Err: errors.New("invalid product ID format")}
 	}
 
 	plan := &SubscriptionPlan{
@@ -89,15 +81,9 @@ func (s *SubscriptionService) UpdateSubscriptionPlan(ctx context.Context, id uui
 		updates["plan_name"] = req.PlanName
 	}
 	if req.Duration != nil {
-		if *req.Duration <= 0 {
-			return nil, service.BadRequest{Err: errors.New("duration must be greater than 0")}
-		}
 		updates["duration"] = *req.Duration
 	}
 	if req.Price != nil {
-		if *req.Price <= 0 {
-			return nil, service.BadRequest{Err: errors.New("price must be greater than 0")}
-		}
 		updates["price"] = *req.Price
 	}
 

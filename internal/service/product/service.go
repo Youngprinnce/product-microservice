@@ -1,12 +1,12 @@
 package product
 
 import (
-"context"
-"errors"
+	"context"
+	"errors"
 
-"github.com/google/uuid"
-"github.com/youngprinnce/product-microservice/internal/service"
-"gorm.io/gorm"
+	"github.com/google/uuid"
+	"github.com/youngprinnce/product-microservice/internal/service"
+	"gorm.io/gorm"
 )
 
 // ProductBC defines the business logic interface for products
@@ -32,12 +32,12 @@ func NewProductService(store ProductStore) *ProductService {
 
 // CreateProduct creates a new product
 func (s *ProductService) CreateProduct(ctx context.Context, req CreateProductRequest) (*Product, error) {
-	// Validate product type
+	// Validate product type (business rule)
 	if !req.Type.IsValid() {
 		return nil, service.BadRequest{Err: errors.New("invalid product type")}
 	}
 
-	// Validate type-specific fields
+	// Validate type-specific fields (business rules)
 	if err := s.validateTypeSpecificFields(req.Type, req.DigitalProduct, req.PhysicalProduct, req.SubscriptionProduct); err != nil {
 		return nil, service.BadRequest{Err: err}
 	}
@@ -99,9 +99,6 @@ func (s *ProductService) UpdateProduct(ctx context.Context, id uuid.UUID, req Up
 		updates["description"] = req.Description
 	}
 	if req.Price != nil {
-		if *req.Price <= 0 {
-			return nil, service.BadRequest{Err: errors.New("price must be greater than 0")}
-		}
 		updates["price"] = *req.Price
 	}
 
@@ -188,6 +185,7 @@ func (s *ProductService) validateTypeSpecificFields(productType ProductType, dig
 		if digital == nil {
 			return errors.New("digital product information is required for digital products")
 		}
+		// Business logic validation only
 		if digital.FileSize <= 0 {
 			return errors.New("file size must be greater than 0 for digital products")
 		}
@@ -198,6 +196,7 @@ func (s *ProductService) validateTypeSpecificFields(productType ProductType, dig
 		if physical == nil {
 			return errors.New("physical product information is required for physical products")
 		}
+		// Business logic validation only
 		if physical.Weight <= 0 {
 			return errors.New("weight must be greater than 0 for physical products")
 		}
@@ -208,6 +207,7 @@ func (s *ProductService) validateTypeSpecificFields(productType ProductType, dig
 		if subscription == nil {
 			return errors.New("subscription product information is required for subscription products")
 		}
+		// Business logic validation only
 		if subscription.SubscriptionPeriod == "" {
 			return errors.New("subscription period is required for subscription products")
 		}

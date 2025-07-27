@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/youngprinnce/product-microservice/internal/service"
 	"github.com/youngprinnce/product-microservice/internal/service/subscription"
+	"github.com/youngprinnce/product-microservice/internal/validation"
 	pb "github.com/youngprinnce/product-microservice/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -27,6 +28,11 @@ func NewSubscriptionHandler(subscriptionService subscription.SubscriptionBC) *Su
 
 // CreateSubscriptionPlan creates a new subscription plan
 func (h *SubscriptionHandler) CreateSubscriptionPlan(ctx context.Context, req *pb.CreateSubscriptionPlanRequest) (*pb.CreateSubscriptionPlanResponse, error) {
+	// Input validation and sanitization
+	if err := h.validateAndSanitizeCreateSubscriptionPlanRequest(req); err != nil {
+		return nil, err
+	}
+
 	createReq := subscription.CreateSubscriptionPlanRequest{
 		ProductID: req.ProductId,
 		PlanName:  req.PlanName,
@@ -63,6 +69,11 @@ func (h *SubscriptionHandler) GetSubscriptionPlan(ctx context.Context, req *pb.G
 
 // UpdateSubscriptionPlan updates a subscription plan
 func (h *SubscriptionHandler) UpdateSubscriptionPlan(ctx context.Context, req *pb.UpdateSubscriptionPlanRequest) (*pb.UpdateSubscriptionPlanResponse, error) {
+	// Input validation and sanitization
+	if err := h.validateAndSanitizeUpdateSubscriptionPlanRequest(req); err != nil {
+		return nil, err
+	}
+
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid subscription plan ID")
@@ -70,8 +81,14 @@ func (h *SubscriptionHandler) UpdateSubscriptionPlan(ctx context.Context, req *p
 
 	updateReq := subscription.UpdateSubscriptionPlanRequest{
 		PlanName: req.PlanName,
-		Duration: &[]int{int(req.Duration)}[0],
-		Price:    &req.Price,
+	}
+
+	if req.Duration != 0 {
+		duration := int(req.Duration)
+		updateReq.Duration = &duration
+	}
+	if req.Price != 0 {
+		updateReq.Price = &req.Price
 	}
 
 	plan, err := h.subscriptionService.UpdateSubscriptionPlan(ctx, id, updateReq)
@@ -146,6 +163,92 @@ func convertToProtobufSubscriptionPlan(plan *subscription.SubscriptionPlan) *pb.
 		CreatedAt: timestamppb.New(plan.CreatedAt),
 		UpdatedAt: timestamppb.New(plan.UpdatedAt),
 	}
+}
+
+func (h *SubscriptionHandler) validateAndSanitizeCreateSubscriptionPlanRequest(req *pb.CreateSubscriptionPlanRequest) error {
+	// Required field validation
+	if req.ProductId == "" {
+		return status.Error(codes.InvalidArgument, "product_id is required")
+	}
+	if req.PlanName == "" {
+		return status.Error(codes.InvalidArgument, "plan_name is required")
+	}
+
+	// Sanitize text inputs
+	req.PlanName = validation.SanitizeString(req.PlanName)
+
+	// Length validation
+	if len(req.PlanName) < 2 {
+		return status.Error(codes.InvalidArgument, "plan_name must be at least 2 characters")
+	}
+	if len(req.PlanName) > 255 {
+		return status.Error(codes.InvalidArgument, "plan_name must be at most 255 characters")
+	}
+
+	// Business rule validation
+	if req.Duration <= 0 {
+		return status.Error(codes.InvalidArgument, "duration must be greater than 0")
+	}
+	if req.Duration > 3650 {
+		return status.Error(codes.InvalidArgument, "duration cannot exceed 10 years (3650 days)")
+	}
+	if req.Price <= 0 {
+		return status.Error(codes.InvalidArgument, "price must be greater than 0")
+	}
+	if req.Price > 1000000 {
+		return status.Error(codes.InvalidArgument, "price cannot exceed 1,000,000")
+	}
+
+	// UUID validation for product_id
+	if _, err := uuid.Parse(req.ProductId); err != nil {
+		return status.Error(codes.InvalidArgument, "invalid product_id format")
+	}
+
+	return nil
+}
+
+func (h *SubscriptionHandler) validateAndSanitizeUpdateSubscriptionPlanRequest(req *pb.UpdateSubscriptionPlanRequest) error {
+	// Required field validation
+	if req.Id == "" {
+		return status.Error(codes.InvalidArgument, "id is required")
+	}
+
+	// UUID validation for id
+	if _, err := uuid.Parse(req.Id); err != nil {
+		return status.Error(codes.InvalidArgument, "invalid id format")
+	}
+
+	// Sanitize text inputs if provided
+	if req.PlanName != "" {
+		req.PlanName = validation.SanitizeString(req.PlanName)
+		if len(req.PlanName) < 2 {
+			return status.Error(codes.InvalidArgument, "plan_name must be at least 2 characters")
+		}
+		if len(req.PlanName) > 255 {
+			return status.Error(codes.InvalidArgument, "plan_name must be at most 255 characters")
+		}
+	}
+
+	// Business rule validation for optional fields
+	if req.Duration != 0 {
+		if req.Duration <= 0 {
+			return status.Error(codes.InvalidArgument, "duration must be greater than 0")
+		}
+		if req.Duration > 3650 {
+			return status.Error(codes.InvalidArgument, "duration cannot exceed 10 years (3650 days)")
+		}
+	}
+
+	if req.Price != 0 {
+		if req.Price <= 0 {
+			return status.Error(codes.InvalidArgument, "price must be greater than 0")
+		}
+		if req.Price > 1000000 {
+			return status.Error(codes.InvalidArgument, "price cannot exceed 1,000,000")
+		}
+	}
+
+	return nil
 }
 
 // convertSubscriptionToGRPCError converts service errors to gRPC errors

@@ -17,11 +17,11 @@ const (
 
 // Product represents the base product entity
 type Product struct {
-	ID          uuid.UUID   `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	Name        string      `json:"name" gorm:"not null"`
+	ID          uuid.UUID   `json:"id" gorm:"type:uuid"`
+	Name        string      `json:"name"`
 	Description string      `json:"description"`
-	Price       float64     `json:"price" gorm:"not null"`
-	Type        ProductType `json:"type" gorm:"not null"`
+	Price       float64     `json:"price"`
+	Type        ProductType `json:"type"`
 	CreatedAt   time.Time   `json:"created_at"`
 	UpdatedAt   time.Time   `json:"updated_at"`
 
@@ -51,10 +51,10 @@ type SubscriptionProductInfo struct {
 
 // CreateProductRequest represents the request to create a product
 type CreateProductRequest struct {
-	Name        string      `json:"name" binding:"required"`
+	Name        string      `json:"name"`
 	Description string      `json:"description"`
-	Price       float64     `json:"price" binding:"required,gt=0"`
-	Type        ProductType `json:"type" binding:"required"`
+	Price       float64     `json:"price"`
+	Type        ProductType `json:"type"`
 
 	// Type-specific fields
 	DigitalProduct      *DigitalProductInfo      `json:"digital_product,omitempty"`

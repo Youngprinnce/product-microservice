@@ -802,7 +802,7 @@ func (x *DeleteProductResponse) GetSuccess() bool {
 
 type ListProductsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          ProductType            `protobuf:"varint,1,opt,name=type,proto3,enum=product.ProductType" json:"type,omitempty"` // Optional filter by type
+	Type          *ProductType           `protobuf:"varint,1,opt,name=type,proto3,enum=product.ProductType,oneof" json:"type,omitempty"` // Optional filter by type
 	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
 	PageSize      int32                  `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -840,8 +840,8 @@ func (*ListProductsRequest) Descriptor() ([]byte, []int) {
 }
 
 func (x *ListProductsRequest) GetType() ProductType {
-	if x != nil {
-		return x.Type
+	if x != nil && x.Type != nil {
+		return *x.Type
 	}
 	return ProductType_DIGITAL
 }
@@ -985,11 +985,12 @@ const file_proto_product_proto_rawDesc = "" +
 	"\x14DeleteProductRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
 	"\x15DeleteProductResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"p\n" +
-	"\x13ListProductsRequest\x12(\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x14.product.ProductTypeR\x04type\x12\x12\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"~\n" +
+	"\x13ListProductsRequest\x12-\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x14.product.ProductTypeH\x00R\x04type\x88\x01\x01\x12\x12\n" +
 	"\x04page\x18\x02 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\"\x8b\x01\n" +
+	"\tpage_size\x18\x03 \x01(\x05R\bpageSizeB\a\n" +
+	"\x05_type\"\x8b\x01\n" +
 	"\x14ListProductsResponse\x12,\n" +
 	"\bproducts\x18\x01 \x03(\v2\x10.product.ProductR\bproducts\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x03R\x05total\x12\x12\n" +
@@ -1080,6 +1081,7 @@ func file_proto_product_proto_init() {
 	if File_proto_product_proto != nil {
 		return
 	}
+	file_proto_product_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

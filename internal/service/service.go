@@ -2,8 +2,6 @@ package service
 
 import (
 "fmt"
-
-"github.com/google/uuid"
 )
 
 // Common service errors
@@ -26,23 +24,3 @@ func (n NotFound) Error() string {
 }
 
 func (NotFound) NotFound() {}
-
-// Helper functions
-func StringToUUID(s string) uuid.UUID {
-	id, err := uuid.Parse(s)
-	if err != nil {
-		return uuid.Nil
-	}
-	return id
-}
-
-func UUIDToString(id uuid.UUID) string {
-	return id.String()
-}
-
-// Common status constants
-const (
-Active   = "active"
-Inactive = "inactive"
-Deleted  = "deleted"
-)
