@@ -30,6 +30,13 @@ A gRPC-based microservice for managing products and subscription plans, built wi
 - **Duration & Pricing**: Flexible duration (in days) and pricing models
 - **CRUD Operations**: Complete lifecycle management for subscription plans
 
+### Security & Authentication
+
+- **Basic Authentication**: All gRPC endpoints protected with username/password authentication
+- **Multiple Users**: Supports multiple user accounts with different credentials
+- **Secure Headers**: Uses standard Authorization header with Base64 encoding
+- **Default Users**: Pre-configured users for testing (admin, client, test)
+
 ## Setup Options
 
 Choose your preferred setup method:
@@ -150,6 +157,38 @@ grpcurl -plaintext -d '{
 
 ## API Documentation
 
+### Authentication
+
+**All API endpoints require basic authentication.** Include the Authorization header with your requests.
+
+#### Default Users
+
+| Username | Password | Description |
+|----------|----------|-------------|
+| `admin` | `password123` | Administrative access |
+| `client` | `client456` | Client access |
+| `test` | `test789` | Testing access |
+
+#### Authentication Examples
+
+```bash
+# Using grpcurl with authentication
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{"page": 1, "page_size": 10}' \
+  localhost:50051 product.ProductService.ListProducts
+
+# Generate auth header (admin:password123)
+echo -n "admin:password123" | base64
+# Result: YWRtaW46cGFzc3dvcmQxMjM=
+
+# Generate auth header (client:client456)
+echo -n "client:client456" | base64
+# Result: Y2xpZW50OmNsaWVudDQ1Ng==
+```
+
+**⚠️ Important**: All examples below include authentication headers. Without proper authentication, you'll receive `Unauthenticated` errors.
+
 ### Product Service
 
 #### CreateProduct
@@ -158,7 +197,9 @@ Creates a new product with type-specific information.
 
 ```bash
 # Create Digital Product
-grpcurl -plaintext -d '{
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
   "name": "E-book: Go Programming",
   "description": "Complete guide to Go programming",
   "price": 29.99,
@@ -170,7 +211,9 @@ grpcurl -plaintext -d '{
 }' localhost:50051 product.ProductService.CreateProduct
 
 # Create Physical Product
-grpcurl -plaintext -d '{
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
   "name": "Go Programming Book",
   "description": "Physical copy of Go programming guide",
   "price": 49.99,
@@ -186,13 +229,17 @@ grpcurl -plaintext -d '{
 
 ```bash
 # List all products
-grpcurl -plaintext -d '{
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
   "page": 1,
   "page_size": 10
 }' localhost:50051 product.ProductService.ListProducts
 
 # Filter by type
-grpcurl -plaintext -d '{
+grpcurl -plaintext \
+  -H "authorization: Basic YWRtaW46cGFzc3dvcmQxMjM=" \
+  -d '{
   "type": "DIGITAL",
   "page": 1,
   "page_size": 10

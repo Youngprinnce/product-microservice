@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/youngprinnce/product-microservice/config"
+	"github.com/youngprinnce/product-microservice/internal/auth"
 	"github.com/youngprinnce/product-microservice/internal/grpc/handlers"
 	"github.com/youngprinnce/product-microservice/internal/postgres"
 	"github.com/youngprinnce/product-microservice/internal/service/product"
@@ -41,8 +42,15 @@ func StartGRPCServer(cfg *config.Config) {
 	productHandler := handlers.NewProductHandler(productService)
 	subscriptionHandler := handlers.NewSubscriptionHandler(subscriptionService)
 
-	// Create gRPC server
-	server := grpc.NewServer()
+	// Initialize authentication
+	authenticator := auth.NewAuthenticator()
+	log.Printf("Basic authentication enabled. Available users: admin, client, test")
+
+	// Create gRPC server with authentication interceptors
+	server := grpc.NewServer(
+		grpc.UnaryInterceptor(authenticator.UnaryInterceptor()),
+		grpc.StreamInterceptor(authenticator.StreamInterceptor()),
+	)
 
 	// Register services
 	pb.RegisterProductServiceServer(server, productHandler)
