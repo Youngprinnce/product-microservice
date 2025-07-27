@@ -52,8 +52,8 @@ func TestProductRepo_Create(t *testing.T) {
 		product := createTestProduct()
 
 		mock.ExpectBegin()
-		mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "products"`)).
-			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(product.ID))
+		mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "products"`)).
+			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
 		err := repo.Create(ctx, product)
@@ -70,7 +70,7 @@ func TestProductRepo_Create(t *testing.T) {
 		product := createTestProduct()
 
 		mock.ExpectBegin()
-		mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "products"`)).
+		mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "products"`)).
 			WillReturnError(errors.New("database error"))
 		mock.ExpectRollback()
 

@@ -48,8 +48,8 @@ func TestSubscriptionRepo_Create(t *testing.T) {
 		plan := createTestSubscriptionPlan()
 
 		mock.ExpectBegin()
-		mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "subscription_plans"`)).
-			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(plan.ID))
+		mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "subscription_plans"`)).
+			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
 		err := repo.Create(ctx, plan)
@@ -66,7 +66,7 @@ func TestSubscriptionRepo_Create(t *testing.T) {
 		plan := createTestSubscriptionPlan()
 
 		mock.ExpectBegin()
-		mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "subscription_plans"`)).
+		mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO "subscription_plans"`)).
 			WillReturnError(errors.New("database error"))
 		mock.ExpectRollback()
 
